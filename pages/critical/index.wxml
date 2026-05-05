@@ -1,0 +1,133 @@
+<view class="page-shell">
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{toolName}}</view>
+        <view class="page-subtitle">临界客户提升</view>
+        <view class="soft-text">月日均、年日均两套口径都能算，直接看后几天平均要补到多少。</view>
+      </view>
+      <view class="tag-chip">冲刺版</view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">口径选择</view>
+        <view class="hint-text">月看当月，年看全年。</view>
+      </view>
+      <button class="ghost-button" bindtap="resetDefaults">恢复示例</button>
+    </view>
+
+    <view class="seg-grid" style="margin-top: 18rpx;">
+      <block wx:for="{{modeOptions}}" wx:key="value">
+        <view class="seg-chip {{item.value === form.mode ? 'active' : ''}}" data-mode="{{item.value}}" bindtap="setMode">
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+
+    <view class="grid-two" style="margin-top: 18rpx;">
+      <view class="field-block" wx:if="{{form.mode === 'month'}}">
+        <view class="field-label">选择月份</view>
+        <picker mode="selector" range="{{monthOptions}}" range-key="label" value="{{monthIndex}}" bindchange="onMonthChange">
+          <view class="picker-field">{{monthOptions[monthIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前统计日</view>
+        <picker mode="date" value="{{form.currentDate}}" data-key="currentDate" bindchange="onDateChange">
+          <view class="picker-field">{{form.currentDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">目标统计日</view>
+        <picker mode="date" value="{{form.targetDate}}" data-key="targetDate" bindchange="onDateChange">
+          <view class="picker-field">{{form.targetDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前时点资产</view>
+        <input class="input-field" type="digit" value="{{form.currentPointAsset}}" data-key="currentPointAsset" bindinput="onInput" placeholder="请输入当前时点资产" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前口径日均</view>
+        <input class="input-field" type="digit" value="{{form.currentAverage}}" data-key="currentAverage" bindinput="onInput" placeholder="请输入当前日均" />
+      </view>
+      <view class="field-block full">
+        <view class="field-label">目标口径日均</view>
+        <input class="input-field" type="digit" value="{{form.targetAverage}}" data-key="targetAverage" bindinput="onInput" placeholder="请输入目标日均" />
+      </view>
+    </view>
+  </view>
+
+  <view class="result-panel" wx:if="{{result}}">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">冲刺结果</view>
+        <view class="hint-text">{{form.mode === 'month' ? '月日均口径' : '年日均口径'}} · {{makerName}}</view>
+      </view>
+      <view class="status-chip {{result.requiredLift >= 0 ? 'good' : 'warm'}}">{{form.mode === 'month' ? '月冲刺' : '年冲刺'}}</view>
+    </view>
+
+    <view class="terminal-band terminal-band-red" wx:if="{{result.warningText}}">
+      <view class="terminal-band-title">输入提醒</view>
+      <view class="terminal-band-text">{{result.warningText}}</view>
+    </view>
+
+    <view class="terminal-band">
+      <view class="terminal-band-title">一眼看懂</view>
+      <view class="terminal-band-text">{{result.summaryText}}</view>
+    </view>
+
+    <view class="metric-grid" style="margin-top: 18rpx;">
+      <view class="metric-card strong">
+        <view class="metric-label">总天数</view>
+        <view class="metric-value">{{result.totalDaysText}}</view>
+      </view>
+      <view class="metric-card strong">
+        <view class="metric-label">已走天数</view>
+        <view class="metric-value">{{result.elapsedDaysText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">目标落点</view>
+        <view class="metric-value">{{result.targetDayIndexText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">剩余天数</view>
+        <view class="metric-value">{{result.remainingDaysText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">当前时点</view>
+        <view class="metric-value">{{result.currentPointAssetText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">当前日均</view>
+        <view class="metric-value">{{result.currentAverageText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">目标日均</view>
+        <view class="metric-value">{{result.targetAverageText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">后续平均</view>
+        <view class="metric-value">{{result.requiredFutureLevelText}}</view>
+      </view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="tiny-card strong">
+        <view class="metric-label">还要补多少</view>
+        <view class="metric-value accent">{{result.requiredLiftText}}</view>
+        <view class="metric-note">后续平均 - 当前时点</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">怎么算</view>
+        <view class="metric-note">先按已走天数换算已完成存量，再倒推剩余天数平均值。</view>
+      </view>
+    </view>
+  </view>
+</view>

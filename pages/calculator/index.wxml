@@ -1,0 +1,191 @@
+<view class="page-shell">
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{toolName}}</view>
+        <view class="page-subtitle">大额订单</view>
+        <view class="soft-text">单笔输入，直接看转让价格、后手利率、保留利率和参考公允价。</view>
+      </view>
+      <view class="tag-chip">订单测算</view>
+    </view>
+  </view>
+
+  <view class="result-panel" wx:if="{{result}}">
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="hero-title">{{listing.name}}</view>
+        <view class="hero-subtitle">{{result.modeLabel}} · 对比口径 {{result.benchmarkText}}</view>
+      </view>
+      <view class="status-chip {{result.statusClass}}">{{result.status}}</view>
+    </view>
+
+    <view class="terminal-band">
+      <view class="terminal-band-title">{{result.reverseTitle}}</view>
+      <view class="terminal-band-text">{{result.reverseText}}</view>
+    </view>
+
+    <view class="terminal-band terminal-band-red">
+      <view class="terminal-band-title">保留利率说明</view>
+      <view class="terminal-band-text">{{result.retainedRateExplainText}}</view>
+      <view class="terminal-band-text">{{result.retainedRateFormulaText}}</view>
+      <view class="terminal-band-text">参考填写区间：{{result.retainedRateGuideText}}</view>
+    </view>
+
+    <view class="terminal-band">
+      <view class="terminal-band-title">参考公允价说明</view>
+      <view class="terminal-band-text">参考公允价是按当前执行利率把到期本息折现得到的理论价格，用来和实际转让价格做比较，不代表真实成交价。</view>
+    </view>
+
+    <view class="metric-grid">
+      <view class="metric-card strong">
+        <view class="metric-label">转让价格</view>
+        <view class="metric-value">{{result.transferPriceText}}</view>
+        <view class="metric-note">{{result.transferPriceRole}}</view>
+      </view>
+      <view class="metric-card strong">
+        <view class="metric-label">后手显示利率</view>
+        <view class="metric-value">{{result.buyerDisplayText}}</view>
+        <view class="metric-note">{{result.buyerDisplayRole}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">利差</view>
+        <view class="metric-value {{result.spreadClass}}">{{result.spreadText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">套利空间</view>
+        <view class="metric-value accent">{{result.priceSpaceText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">今日年化</view>
+        <view class="metric-value">{{result.todayYieldText}}</view>
+        <view class="metric-note">{{result.todayYieldRole}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">保留利率</view>
+        <view class="metric-value">{{result.retainedRateText}}</view>
+        <view class="metric-note">{{result.retainedRateRole}}</view>
+      </view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 18rpx;">
+      <view class="tiny-card">
+        <view class="metric-label">参考公允价</view>
+        <view class="metric-value">{{result.fairPriceText}}</view>
+        <view class="metric-note">按当前执行利率折现，套利收益 {{result.excessProfitText}}</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">到期本息</view>
+        <view class="metric-value">{{result.maturityAmountText}}</view>
+        <view class="metric-note">后手实际年化 {{result.buyerActualText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">产品参数</view>
+        <view class="hint-text">期限与日期全部用选择器，输入更像定价工具而不是表单。</view>
+      </view>
+      <button class="ghost-button" bindtap="resetDefaults">恢复示例</button>
+    </view>
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">起息日</view>
+        <picker mode="date" value="{{product.startDate}}" data-key="startDate" bindchange="onProductDateChange">
+          <view class="picker-field">{{product.startDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">原产品期限</view>
+        <picker mode="selector" range="{{termOptions}}" range-key="label" value="{{termIndex}}" bindchange="onTermChange">
+          <view class="picker-field">{{termOptions[termIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">到期日</view>
+        <view class="picker-field">{{product.maturityDate}}</view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">票面年化收益率</view>
+        <input class="input-field" type="digit" value="{{product.couponRate}}" data-key="couponRate" bindinput="onProductInput" placeholder="%" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">本金</view>
+        <input class="input-field" type="digit" value="{{product.principal}}" data-key="principal" bindinput="onProductInput" placeholder="元" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">今日日期</view>
+        <picker mode="date" value="{{product.todayDate}}" data-key="todayDate" bindchange="onProductDateChange">
+          <view class="picker-field">{{product.todayDate}}</view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">对比利率</view>
+        <view class="hint-text">默认只显示当前比对档位，完整利率表折叠在下方。</view>
+      </view>
+      <button class="ghost-button" bindtap="toggleRateEditor">{{rateToggleText}}</button>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">对比期限</view>
+        <picker mode="selector" range="{{termOptions}}" range-key="label" value="{{benchmarkIndex}}" bindchange="onBenchmarkChange">
+          <view class="picker-field">{{benchmarkLabel}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前执行利率</view>
+        <input class="input-field" type="digit" value="{{currentBenchmarkRate}}" bindinput="onCurrentBenchmarkRateInput" placeholder="%" />
+      </view>
+    </view>
+
+    <view class="grid-two" wx:if="{{showRateEditor}}" style="margin-top: 16rpx;">
+      <block wx:for="{{rateItems}}" wx:key="value">
+        <view class="rate-chip {{item.activeClass}}">
+          <view class="rate-title">{{item.label}}</view>
+          <input class="input-field" type="digit" value="{{item.rate}}" data-term="{{item.value}}" bindinput="onRateInput" placeholder="%" />
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">挂单输入</view>
+        <view class="hint-text">选择一种驱动方式输入，另外两项自动反推。工行页面中的保留利率，即本工具用于计算转让价格的卖方保留收益率口径。</view>
+      </view>
+    </view>
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block full">
+        <view class="field-label">挂单名称</view>
+        <input class="input-field" type="text" value="{{listing.name}}" data-key="name" bindinput="onListingInput" placeholder="例如：3年期挂单" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">挂单日期</view>
+        <picker mode="date" value="{{listing.listingDate}}" bindchange="onListingDateChange">
+          <view class="picker-field">{{listing.listingDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">反推方式</view>
+        <picker mode="selector" range="{{modeOptions}}" range-key="label" value="{{listing.modeIndex}}" bindchange="onModeChange">
+          <view class="picker-field">{{listing.modeLabel}}</view>
+        </picker>
+      </view>
+      <view class="field-block full">
+        <view class="field-label">{{listing.driverFieldLabel}}</view>
+        <input class="input-field" type="digit" value="{{listing.driverValue}}" data-key="driverValue" bindinput="onListingInput" placeholder="输入当前驱动值" />
+      </view>
+    </view>
+  </view>
+</view>

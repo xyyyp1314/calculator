@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/auth/index",
+    "pages/home/index",
+    "pages/calculator/index",
+    "pages/scanner/index",
+    "pages/arbitrage/index",
+    "pages/critical/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "支行日用工具箱",
+    "navigationBarBackgroundColor": "#fff8f8",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fff8f8",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#7a8195",
+    "selectedColor": "#bf2530",
+    "backgroundColor": "#fffefe",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "工具箱"
+      },
+      {
+        "pagePath": "pages/scanner/index",
+        "text": "日均"
+      },
+      {
+        "pagePath": "pages/calculator/index",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/arbitrage/index",
+        "text": "套利"
+      },
+      {
+        "pagePath": "pages/critical/index",
+        "text": "临界"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

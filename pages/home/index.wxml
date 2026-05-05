@@ -1,0 +1,65 @@
+<view class="page-shell">
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{brandName}}</view>
+        <view class="page-subtitle">常用工具一屏直达</view>
+        <view class="soft-text">日均、订单、套利和临界客户提升集中在一起，打开就能算。</view>
+      </view>
+      <view class="tag-chip">工具箱</view>
+    </view>
+  </view>
+
+  <view class="profile-card" wx:if="{{user}}">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">当前设备</view>
+        <view class="hint-text">首次验证通过后，本机可直接使用。制作者：{{makerName}}</view>
+      </view>
+      <button class="ghost-button logout-button" bindtap="logout">退出登录</button>
+    </view>
+
+    <view class="profile-grid" style="margin-top: 18rpx;">
+      <view class="profile-item">
+        <view class="profile-key">姓名</view>
+        <view class="profile-value">{{user.name}}</view>
+      </view>
+      <view class="profile-item">
+        <view class="profile-key">工号或账号</view>
+        <view class="profile-value">{{user.employeeId}}</view>
+      </view>
+      <view class="profile-item">
+        <view class="profile-key">所属制作方</view>
+        <view class="profile-value">{{makerName}}</view>
+      </view>
+      <view class="profile-item">
+        <view class="profile-key">工具范围</view>
+        <view class="profile-value">日常测算 + 盯盘辅助 + 冲刺提升</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">工具入口</view>
+        <view class="hint-text">每个入口都尽量说人话，点进去就知道能帮你算什么。</view>
+      </view>
+    </view>
+
+    <view class="tool-grid" style="margin-top: 18rpx;">
+      <block wx:for="{{tools}}" wx:key="url">
+        <navigator class="tool-nav" url="{{item.url}}" open-type="switchTab">
+          <view class="tool-card">
+            <view class="tool-card-title">{{item.title}}</view>
+            <view class="tool-card-tag">{{item.tag}}</view>
+            <view class="tool-card-text">{{item.text}}</view>
+          </view>
+        </navigator>
+      </block>
+    </view>
+  </view>
+</view>

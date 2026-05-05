@@ -1,0 +1,3 @@
+.tool-nav:last-child {
+  grid-column: auto;
+}

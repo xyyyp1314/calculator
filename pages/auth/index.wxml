@@ -1,0 +1,37 @@
+<view class="login-shell">
+  <view class="login-card">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{brandName}}</view>
+        <view class="page-subtitle">首次验证</view>
+        <view class="soft-text">仅限内部使用，首次通过后当前设备可直接进入。</view>
+        <view class="maker-line">请输入巩义支行个金部下发的验证口令。</view>
+      </view>
+      <view class="tag-chip">内部使用</view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 22rpx;">
+      <view class="field-block full">
+        <view class="field-label">使用人姓名</view>
+        <input class="input-field" type="text" value="{{form.name}}" data-key="name" bindinput="onInput" placeholder="请输入姓名" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">工号或账号</view>
+        <input class="input-field" type="text" value="{{form.employeeId}}" data-key="employeeId" bindinput="onInput" placeholder="请输入工号或账号" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">验证口令</view>
+        <input class="input-field" password="true" type="text" value="{{form.verifyCode}}" data-key="verifyCode" bindinput="onInput" placeholder="请输入验证口令" />
+      </view>
+    </view>
+
+    <view class="login-status" wx:if="{{statusText}}">
+      {{statusText}}
+    </view>
+
+    <button class="pill-button" style="margin-top: 22rpx;" bindtap="submitLogin">验证并进入</button>
+  </view>
+</view>

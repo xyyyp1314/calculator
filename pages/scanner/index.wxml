@@ -1,0 +1,167 @@
+<view class="page-shell">
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{toolName}}</view>
+        <view class="page-subtitle">日均计算器</view>
+        <view class="soft-text">看当前完成度，也能倒推剩余平线和 A*，适合日常快速测算。</view>
+      </view>
+      <view class="tag-chip">日均测算</view>
+    </view>
+
+    <view class="grid-three" wx:if="{{result}}" style="margin-top: 18rpx;">
+      <view class="tiny-card strong">
+        <view class="metric-label">当前日均新增</view>
+        <view class="metric-value">{{result.dailyIncText}}</view>
+        <view class="metric-note">较年末日均基期</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">目标完成度</view>
+        <view class="metric-value {{result.completionClass}}">{{result.completionText}}</view>
+        <view class="metric-note">当前 / 目标</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">剩余天数</view>
+        <view class="metric-value">{{result.daysLeftText}}</view>
+        <view class="metric-note">目标日 {{form.targetDate}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">基础参数</view>
+        <view class="hint-text">增量口径 = 当前总量 - 年末基期。单位和日期都用选择器，录入更顺手。</view>
+      </view>
+      <button class="ghost-button" bindtap="resetDefaults">示例值</button>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">统计单位</view>
+        <picker mode="selector" range="{{unitOptions}}" range-key="label" value="{{unitIndex}}" bindchange="onUnitChange">
+          <view class="picker-field">{{unitOptions[unitIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">目标日均新增 A</view>
+        <input class="input-field" type="digit" value="{{form.targetDailyInc}}" data-key="targetDailyInc" bindinput="onFieldInput" placeholder="按所选单位输入" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前日期</view>
+        <picker mode="date" value="{{form.curDate}}" data-key="curDate" bindchange="onDateChange">
+          <view class="picker-field">{{form.curDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">目标日期</view>
+        <picker mode="date" value="{{form.targetDate}}" data-key="targetDate" bindchange="onDateChange">
+          <view class="picker-field">{{form.targetDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前时点总量</view>
+        <input class="input-field" type="digit" value="{{form.curPointTotal}}" data-key="curPointTotal" bindinput="onFieldInput" placeholder="按所选单位输入" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前日均总量 B</view>
+        <input class="input-field" type="digit" value="{{form.curDailyTotal}}" data-key="curDailyTotal" bindinput="onFieldInput" placeholder="按所选单位输入" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">年末时点基期</view>
+        <input class="input-field" type="digit" value="{{form.basePoint}}" data-key="basePoint" bindinput="onFieldInput" placeholder="按所选单位输入" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">年末日均基期</view>
+        <input class="input-field" type="digit" value="{{form.baseDaily}}" data-key="baseDaily" bindinput="onFieldInput" placeholder="按所选单位输入" />
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">倒推设置</view>
+        <view class="hint-text">填入剩余平线增量后，系统会自动反推出 A* 和 A*/A。</view>
+      </view>
+      <button class="ghost-button" bindtap="clearReverse">清空 A*</button>
+    </view>
+
+    <view class="terminal-band terminal-band-red">
+      <view class="terminal-band-title">倒推说明</view>
+      <view class="terminal-band-text">平线增量按年末时点基期计算，用来判断剩余阶段至少要守住的平线。</view>
+      <view class="terminal-band-text">{{result.reverseHintText}}</view>
+    </view>
+
+    <view class="field-block" style="margin-top: 16rpx;">
+      <view class="field-label">剩余平线增量</view>
+      <input class="input-field" type="digit" value="{{form.lineIncInput}}" data-key="lineIncInput" bindinput="onFieldInput" placeholder="不填则不做倒推 A*" />
+    </view>
+  </view>
+
+  <view class="result-panel" wx:if="{{result}}">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">测算结果</view>
+        <view class="hint-text">当前单位：{{result.unitLabel}}</view>
+      </view>
+      <view class="status-chip {{result.completionClass}}">完成 {{result.completionText}}</view>
+    </view>
+
+    <view class="terminal-band terminal-band-red" wx:if="{{result.warningText}}">
+      <view class="terminal-band-title">输入提醒</view>
+      <view class="terminal-band-text">{{result.warningText}}</view>
+    </view>
+
+    <view class="daily-pair-grid" style="margin-top: 18rpx;">
+      <view class="metric-card daily-metric strong">
+        <view class="metric-label">时点新增</view>
+        <view class="metric-value">{{result.pointIncText}}</view>
+      </view>
+      <view class="metric-card daily-metric strong">
+        <view class="metric-label">日均新增</view>
+        <view class="metric-value">{{result.dailyIncText}}</view>
+      </view>
+      <view class="metric-card daily-metric">
+        <view class="metric-label">日均缺口</view>
+        <view class="metric-value">{{result.needPerDayText}}</view>
+        <view class="metric-note">到目标日所需</view>
+      </view>
+      <view class="metric-card daily-metric">
+        <view class="metric-label">目标日均总量</view>
+        <view class="metric-value">{{result.targetDailyTotalText}}</view>
+        <view class="metric-note">基期日均 + 目标 A</view>
+      </view>
+    </view>
+
+    <view class="daily-stack">
+      <view class="metric-card daily-metric daily-long">
+        <view class="metric-label">剩余平线总量</view>
+        <view class="metric-value">{{result.remainDailyTotalLineText}}</view>
+        <view class="metric-note">达标期间不能低于</view>
+      </view>
+      <view class="metric-card daily-metric daily-long">
+        <view class="metric-label">剩余平线增量</view>
+        <view class="metric-value">{{result.remainLineIncText}}</view>
+        <view class="metric-note">按年末时点基期</view>
+      </view>
+    </view>
+
+    <view class="daily-pair-grid" style="margin-top: 16rpx;">
+      <view class="metric-card daily-metric">
+        <view class="metric-label">倒推日均新增 A*</view>
+        <view class="metric-value">{{result.astarText}}</view>
+        <view class="metric-note">填平线后生成</view>
+      </view>
+      <view class="metric-card daily-metric">
+        <view class="metric-label">A* / A</view>
+        <view class="metric-value {{result.astarRatioClass}}">{{result.astarRatioText}}</view>
+        <view class="metric-note">倒推目标 / 原目标</view>
+      </view>
+    </view>
+  </view>
+</view>

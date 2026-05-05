@@ -1,0 +1,53 @@
+.daily-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.daily-stack {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.daily-metric .metric-label {
+  min-height: 54rpx;
+  font-size: 20rpx;
+  line-height: 1.35;
+}
+
+.daily-metric .metric-value {
+  font-size: 35rpx;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.daily-metric.strong .metric-value {
+  font-size: 38rpx;
+}
+
+.daily-long .metric-label {
+  min-height: auto;
+}
+
+.daily-long .metric-value {
+  font-size: 33rpx;
+  line-height: 1.12;
+}
+
+.daily-metric .metric-note {
+  min-height: auto;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  line-height: 1.35;
+}
+
+@media (max-width: 420px) {
+  .daily-metric .metric-value {
+    font-size: 33rpx;
+  }
+
+  .daily-metric.strong .metric-value {
+    font-size: 36rpx;
+  }
+}

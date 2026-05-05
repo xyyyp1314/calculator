@@ -1,0 +1,5 @@
+project.private.config.json
+
+# Local editor / OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,243 @@
+<view class="page-shell">
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{toolName}}</view>
+        <view class="page-subtitle">大额订单套利</view>
+        <view class="soft-text">把页面老利率拆开看，先反推真实挂出日期，再看这单今天到底藏了多少空间。</view>
+      </view>
+      <view class="tag-chip">套利盯盘</view>
+    </view>
+
+    <view class="grid-three" wx:if="{{result}}" style="margin-top: 18rpx;">
+      <view class="tiny-card strong">
+        <view class="metric-label">推算挂出日期</view>
+        <view class="metric-value arbitrage-small">{{result.inferredListingDateText}}</view>
+        <view class="metric-note">页面后手利率按这一天锁住</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">已藏收益天数</view>
+        <view class="metric-value">{{result.hiddenDaysText}}</view>
+        <view class="metric-note">不撤单不重挂就会继续累</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">今天真实后手</view>
+        <view class="metric-value">{{result.actualTodayYieldText}}</view>
+        <view class="metric-note">比页面多 {{result.frozenGapText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">页面信息</view>
+        <view class="hint-text">先把页面当前能看到的价格和后手利率填进来，这页会把“老利率”拆成今天的真实口径，挂出日期按天取整。</view>
+      </view>
+      <button class="ghost-button" bindtap="resetDefaults">恢复示例</button>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block full">
+        <view class="field-label">挂单备注</view>
+        <input class="input-field" type="text" value="{{quote.name}}" data-key="name" bindinput="onQuoteInput" placeholder="例如：3年期老挂单" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">页面看到的价格</view>
+        <input class="input-field" type="digit" value="{{quote.visiblePrice}}" data-key="visiblePrice" bindinput="onQuoteInput" placeholder="元" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">页面后手利率</view>
+        <input class="input-field" type="digit" value="{{quote.visibleBuyerYield}}" data-key="visibleBuyerYield" bindinput="onQuoteInput" placeholder="%" />
+      </view>
+      <view class="field-block full">
+        <view class="field-label">今天重挂后手利率</view>
+        <input class="input-field" type="digit" value="{{quote.relistBuyerYield}}" data-key="relistBuyerYield" bindinput="onQuoteInput" placeholder="填你想看的重挂利率" />
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">产品参数</view>
+        <view class="hint-text">固定利率大额存单按日计息，这里按票面口径和剩余天数来反推。</view>
+      </view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">起息日</view>
+        <picker mode="date" value="{{product.startDate}}" data-key="startDate" bindchange="onProductDateChange">
+          <view class="picker-field">{{product.startDate}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">原产品期限</view>
+        <picker mode="selector" range="{{termOptions}}" range-key="label" value="{{termIndex}}" bindchange="onTermChange">
+          <view class="picker-field">{{termOptions[termIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">到期日</view>
+        <view class="picker-field">{{product.maturityDate}}</view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">票面年化</view>
+        <input class="input-field" type="digit" value="{{product.couponRate}}" data-key="couponRate" bindinput="onProductInput" placeholder="%" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">本金</view>
+        <input class="input-field" type="digit" value="{{product.principal}}" data-key="principal" bindinput="onProductInput" placeholder="元" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">今天日期</view>
+        <picker mode="date" value="{{product.todayDate}}" data-key="todayDate" bindchange="onProductDateChange">
+          <view class="picker-field">{{product.todayDate}}</view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">市场对比</view>
+        <view class="hint-text">先选市场利率口径，再看这单相对市场是便宜还是偏贵。</view>
+      </view>
+      <button class="ghost-button" bindtap="toggleRateEditor">{{rateToggleText}}</button>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">对比期限</view>
+        <picker mode="selector" range="{{termOptions}}" range-key="label" value="{{benchmarkIndex}}" bindchange="onBenchmarkChange">
+          <view class="picker-field">{{benchmarkLabel}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">当前市场利率</view>
+        <input class="input-field" type="digit" value="{{currentBenchmarkRate}}" bindinput="onCurrentBenchmarkRateInput" placeholder="%" />
+      </view>
+    </view>
+
+    <view class="grid-two" wx:if="{{showRateEditor}}" style="margin-top: 16rpx;">
+      <block wx:for="{{rateItems}}" wx:key="value">
+        <view class="rate-chip {{item.activeClass}}">
+          <view class="rate-title">{{item.label}}</view>
+          <input class="input-field" type="digit" value="{{item.rate}}" data-term="{{item.value}}" bindinput="onRateInput" placeholder="%" />
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="result-panel" wx:if="{{result}}">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">拆出来的结果</view>
+        <view class="hint-text">{{quote.name}} · {{result.benchmarkText}}</view>
+      </view>
+      <view class="status-chip {{result.statusClass}}">{{result.statusText}}</view>
+    </view>
+
+    <view class="terminal-band terminal-band-red" wx:if="{{result.warningText}}">
+      <view class="terminal-band-title">输入提醒</view>
+      <view class="terminal-band-text">{{result.warningText}}</view>
+    </view>
+
+    <view class="terminal-band">
+      <view class="terminal-band-title">盯盘结论</view>
+      <view class="terminal-band-text">{{result.noteText}}</view>
+    </view>
+
+    <view class="metric-grid" style="margin-top: 18rpx;">
+      <view class="metric-card strong">
+        <view class="metric-label">页面价格</view>
+        <view class="metric-value">{{result.visiblePriceText}}</view>
+        <view class="metric-note">你现在在页面上看到的数</view>
+      </view>
+      <view class="metric-card strong">
+        <view class="metric-label">页面后手利率</view>
+        <view class="metric-value">{{result.visibleBuyerYieldText}}</view>
+        <view class="metric-note">挂出当天锁住的老数</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">真实后手年化</view>
+        <view class="metric-value">{{result.actualTodayYieldText}}</view>
+        <view class="metric-note">今天如果按剩余天数重算</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">比页面多出来</view>
+        <view class="metric-value accent">{{result.frozenGapText}}</view>
+        <view class="metric-note">这部分就是“老利率”藏住的</view>
+      </view>
+    </view>
+
+    <view class="metric-grid" style="margin-top: 16rpx;">
+      <view class="metric-card">
+        <view class="metric-label">推算保留利率</view>
+        <view class="metric-value">{{result.inferredRetainedRateText}}</view>
+        <view class="metric-note">按挂出日期和页面价格倒推</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">一天大概藏住的收益</view>
+        <view class="metric-value">{{result.hiddenOneDayText}}</view>
+        <view class="metric-note">如果不撤单次日重挂，大概会差这点</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">市场参考价</view>
+        <view class="metric-value">{{result.marketFairPriceText}}</view>
+        <view class="metric-note">{{result.benchmarkText}}</view>
+      </view>
+      <view class="metric-card">
+        <view class="metric-label">对市场的价差</view>
+        <view class="metric-value accent">{{result.marketSpaceText}}</view>
+        <view class="metric-note">真实后手比市场 {{result.marketSpreadText}}</view>
+      </view>
+    </view>
+
+    <view class="terminal-band" style="margin-top: 16rpx;">
+      <view class="terminal-band-title">市场口径</view>
+      <view class="terminal-band-text">{{result.marketExplainText}}</view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="tiny-card strong">
+        <view class="metric-label">同保留利率重挂价</view>
+        <view class="metric-value">{{result.sameRetainedRelistPriceText}}</view>
+        <view class="metric-note">不改保留利率，只把这单今天重挂</view>
+      </view>
+      <view class="tiny-card strong">
+        <view class="metric-label">同保留利率套利空间</view>
+        <view class="metric-value accent">{{result.sameRetainedSpaceText}}</view>
+        <view class="metric-note">重挂价减页面价</view>
+      </view>
+    </view>
+
+    <view class="terminal-band terminal-band-red">
+      <view class="terminal-band-title">重挂口径一</view>
+      <view class="terminal-band-text">{{result.sameRetainedExplainText}}</view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="tiny-card">
+        <view class="metric-label">按你填的重挂价</view>
+        <view class="metric-value">{{result.relistPriceText}}</view>
+        <view class="metric-note">今天重挂后手利率 = {{result.relistBuyerYieldText}}</view>
+      </view>
+      <view class="tiny-card">
+        <view class="metric-label">自定义套利空间</view>
+        <view class="metric-value accent">{{result.relistSpaceText}}</view>
+        <view class="metric-note">重挂价减页面价</view>
+      </view>
+    </view>
+
+    <view class="terminal-band terminal-band-red">
+      <view class="terminal-band-title">重挂口径二</view>
+      <view class="terminal-band-text">{{result.relistExplainText}}</view>
+    </view>
+  </view>
+</view>
