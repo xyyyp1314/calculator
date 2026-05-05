@@ -1,4 +1,6 @@
 project.private.config.json
+hermes-webui/
+scripts/
 
 # Local editor / OS noise
 .DS_Store
