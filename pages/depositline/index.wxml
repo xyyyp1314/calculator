@@ -1,0 +1,161 @@
+<view class="page-shell">
+  <!-- ── Hero 面板 ── -->
+  <view class="hero-panel">
+    <view class="hero-spark hero-spark-one"></view>
+    <view class="hero-spark hero-spark-two"></view>
+    <view class="hero-head">
+      <view class="head-main">
+        <view class="brand-kicker">巩义支行个金部出品</view>
+        <view class="hero-title">{{toolName}}</view>
+        <view class="page-subtitle">存款日平线</view>
+        <view class="soft-text">选择存款种类和月份，自动生成考核节点。正推看日平线，倒推看平均数，过程推算看后续怎么补。</view>
+      </view>
+      <view class="tag-chip">日平线</view>
+    </view>
+
+    <!-- 顶部结果摘要 -->
+    <view class="line-result-grid" style="margin-top: 18rpx;" wx:if="{{result}}">
+      <view class="line-metric primary">
+        <view class="metric-label">日平线</view>
+        <view class="metric-value">{{result.dailyLineText}}</view>
+        <view class="metric-note">加权平均 − 年末余额</view>
+      </view>
+      <view class="line-metric primary">
+        <view class="metric-label">加权平均</view>
+        <view class="metric-value">{{result.weightedAvgText}}</view>
+        <view class="metric-note">总系数 {{totalWeight}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 基础参数 ── -->
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">基础参数</view>
+        <view class="hint-text">选择存款种类和月份后，下方自动生成考核节点。</view>
+      </view>
+      <button class="ghost-button" bindtap="resetDefaults">恢复示例</button>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <view class="field-block">
+        <view class="field-label">存款种类</view>
+        <picker mode="selector" range="{{depositTypes}}" range-key="label" value="{{depositTypeIndex}}" bindchange="onDepositTypeChange">
+          <view class="picker-field">{{depositTypes[depositTypeIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block">
+        <view class="field-label">考核月份</view>
+        <picker mode="selector" range="{{monthOptions}}" range-key="label" value="{{monthIndex}}" bindchange="onMonthChange">
+          <view class="picker-field">{{monthOptions[monthIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="field-block full">
+        <view class="field-label">年末余额（2025-12-31）</view>
+        <view class="lock-row">
+          <input class="input-field {{typeData.yearEndLocked ? 'disabled' : ''}}" type="digit" value="{{typeData.yearEndBalance}}" bindinput="onYearEndInput" placeholder="输入年末总余额（万元）" disabled="{{typeData.yearEndLocked}}" />
+          <button class="lock-btn {{typeData.yearEndLocked ? 'locked' : ''}}" bindtap="toggleYearEndLock">
+            {{typeData.yearEndLocked ? '🔒' : '🔓'}}
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 倒推 / 过程推算 ── -->
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">倒推设置</view>
+        <view class="hint-text">填入目标日平线后，可倒推出当月各节点平均需要多少余额。已填的节点按实际值计算，未填的自动均摊。</view>
+      </view>
+      <button class="ghost-button" bindtap="clearTargetLine">清空</button>
+    </view>
+
+    <view class="reverse-section">
+      <view class="field-label">目标日平线（万元）</view>
+      <input class="input-field" type="digit" value="{{typeData.targetLine}}" bindinput="onTargetLineInput" placeholder="不填则只做正向计算" />
+    </view>
+
+    <!-- 倒推结果 -->
+    <view wx:if="{{result.hasReverse}}">
+      <view class="terminal-band" style="margin-top: 16rpx;">
+        <view class="terminal-band-title">倒推结论</view>
+        <view class="terminal-band-text">{{result.reverseText}}</view>
+      </view>
+      <view class="line-result-grid" style="margin-top: 14rpx;" wx:if="{{result.hasProgress}}">
+        <view class="line-metric">
+          <view class="metric-label">已填节点</view>
+          <view class="metric-value" style="font-size: 32rpx;">{{result.filledCountText}}</view>
+        </view>
+        <view class="line-metric primary">
+          <view class="metric-label">剩余节点需保持</view>
+          <view class="metric-value" style="font-size: 32rpx;">{{result.neededAvgText}}</view>
+          <view class="metric-note">万元</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── 考核节点 ── -->
+  <view class="card-panel">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">考核节点（{{monthOptions[monthIndex].label}}）</view>
+        <view class="hint-text">共 {{checkpoints.length}} 个节点，总系数 {{totalWeight}}。周五 ×1，月末 ×3。</view>
+      </view>
+    </view>
+
+    <view class="grid-two" style="margin-top: 16rpx;">
+      <block wx:for="{{checkpoints}}" wx:key="date">
+        <view class="cp-card {{item.isMonthEnd ? 'is-month-end' : ''}}">
+          <view class="cp-header">
+            <view class="cp-date">{{item.label}}</view>
+            <view class="cp-weight">{{item.weightLabel}}</view>
+          </view>
+          <input class="input-field" type="digit" value="{{typeData.values[item.date]}}" data-date="{{item.date}}" bindinput="onCheckpointInput" placeholder="输入余额（万元）" />
+          <!-- 倒推提示 -->
+          <view class="cp-hint need-hint" wx:if="{{result.suggestions[item.date]}}">
+            建议: {{result.suggestions[item.date]}}
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- ── 详细结果 ── -->
+  <view class="result-panel" wx:if="{{result && result.showDetail}}">
+    <view class="section-head">
+      <view class="head-main">
+        <view class="hero-title" style="font-size: 32rpx;">计算明细</view>
+        <view class="hint-text">{{depositTypes[depositTypeIndex].label}} · {{monthOptions[monthIndex].label}}</view>
+      </view>
+      <view class="status-chip good">{{result.statusText}}</view>
+    </view>
+
+    <view class="terminal-band" style="margin-top: 14rpx;">
+      <view class="terminal-band-title">计算过程</view>
+      <view class="terminal-band-text">{{result.formulaText}}</view>
+    </view>
+
+    <view class="line-result-grid" style="margin-top: 14rpx;">
+      <view class="line-metric">
+        <view class="metric-label">加权总和</view>
+        <view class="metric-value" style="font-size: 30rpx;">{{result.weightedSumText}}</view>
+      </view>
+      <view class="line-metric">
+        <view class="metric-label">总系数</view>
+        <view class="metric-value" style="font-size: 30rpx;">{{totalWeight}}</view>
+      </view>
+      <view class="line-metric">
+        <view class="metric-label">年末余额</view>
+        <view class="metric-value" style="font-size: 30rpx;">{{result.yearEndText}}</view>
+      </view>
+      <view class="line-metric primary">
+        <view class="metric-label">日平线结果</view>
+        <view class="metric-value" style="font-size: 36rpx;">{{result.dailyLineText}}</view>
+      </view>
+    </view>
+  </view>
+</view>

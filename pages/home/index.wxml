@@ -52,13 +52,13 @@
 
     <view class="tool-grid" style="margin-top: 18rpx;">
       <block wx:for="{{tools}}" wx:key="url">
-        <navigator class="tool-nav" url="{{item.url}}" open-type="switchTab">
+        <view class="tool-nav" data-url="{{item.url}}" data-istab="{{item.isTab}}" bindtap="goTool">
           <view class="tool-card">
             <view class="tool-card-title">{{item.title}}</view>
             <view class="tool-card-tag">{{item.tag}}</view>
             <view class="tool-card-text">{{item.text}}</view>
           </view>
-        </navigator>
+        </view>
       </block>
     </view>
   </view>

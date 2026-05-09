@@ -5,7 +5,8 @@
     "pages/calculator/index",
     "pages/scanner/index",
     "pages/arbitrage/index",
-    "pages/critical/index"
+    "pages/critical/index",
+    "pages/depositline/index"
   ],
   "window": {
     "navigationBarTitleText": "支行日用工具箱",
